@@ -1,12 +1,54 @@
 <script>
+import todoThings from "../data/todoThings";
 export default {
   name: "TodoInputComponent",
+  data() {
+    return {
+      todoThings,
+      newTodoThing: "",
+      isNewTodoIncluded: false,
+      errorOutput: "",
+    };
+  },
+  methods: {
+    sendNewTodoThing() {
+      this.isNewTodoIncluded = false;
+
+      this.todoThings.forEach((item) => {
+        if (
+          item.todoThing.toLowerCase().trim() ===
+          this.newTodoThing.toLowerCase().trim()
+        ) {
+          this.isNewTodoIncluded = true;
+          this.errorOutput = "L' elemento è gia presente";
+          this.$emit("notifyError", this.errorOutput);
+          return;
+        }
+      });
+
+      if (!this.isNewTodoIncluded && this.newTodoThing.length >= 3) {
+        this.todoThings.unshift({
+          todoThing: this.newTodoThing,
+          isDone: false,
+        });
+        this.newTodoThing = "";
+      } else if (!this.isNewTodoIncluded) {
+        this.errorOutput = "Il numero minimo di caratteri è 3";
+        this.$emit("notifyError", this.errorOutput);
+      }
+    },
+  },
 };
 </script>
 
 <template>
   <div class="input-container">
-    <input type="text" placeholder="Inserisci una cosa da fare" />
+    <input
+      v-model="newTodoThing"
+      @keyup.enter="sendNewTodoThing"
+      type="text"
+      placeholder="Inserisci una cosa da fare"
+    />
   </div>
 </template>
 

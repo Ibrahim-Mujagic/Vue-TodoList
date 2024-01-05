@@ -11,25 +11,38 @@ export default {
   data() {
     return {
       todoThings,
+      errorMessage: "",
     };
+  },
+  methods: {
+    getDataError(errorData) {
+      this.errorMessage = errorData;
+    },
   },
 };
 </script>
 
 <template>
+  <p v-if="errorMessage !== ''" class="errorMsg">{{ errorMessage }}</p>
   <div class="todo-container">
-    <TodoInputComponent />
+    <TodoInputComponent @notifyError="getDataError" />
     <div class="main-todolist">
       <TodoItemComponent
         v-for="(todoData, index) in todoThings"
         :key="index"
         :todoData="todoData"
+        :todoItemIndex="index"
+        @notifyError="getDataError"
       />
+      <h2 v-if="todoThings.length === 0">Tutto Completato!!!😎​😁​</h2>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.errorMsg {
+  color: crimson;
+}
 .todo-container {
   height: 600px;
   width: 500px;
@@ -43,9 +56,18 @@ export default {
     display: none;
   }
   .main-todolist {
+    height: calc(100% - 70px);
     width: 100%;
     display: flex;
     flex-direction: column;
+
+    h2 {
+      text-align: center;
+      margin-top: 90px;
+      color: #85e89d;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+    }
   }
 }
 </style>
